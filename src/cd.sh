@@ -102,12 +102,15 @@ __enhancd::cd::before()
 
 __enhancd::cd::after()
 {
-    local list
-    list="$(__enhancd::history::update)"
+	# Save log file in parallel quietly
+    ( {
+        local list
+        list="$(__enhancd::history::update)"
 
-    if [[ -n $list ]]; then
-        echo "$list" >| "$ENHANCD_DIR/enhancd.log"
-    fi
+        if [[ -n $list ]]; then
+            echo "$list" >| "$ENHANCD_DIR/enhancd.log"
+        fi
+    } & )
 
     if [[ -n $ENHANCD_HOOK_AFTER_CD ]]; then
         eval "$ENHANCD_HOOK_AFTER_CD"
